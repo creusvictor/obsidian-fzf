@@ -1,0 +1,14 @@
+# Editor and IDE files
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test vaults (if any)
+test-vault/
+*.test

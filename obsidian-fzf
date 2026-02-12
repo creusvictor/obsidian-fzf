@@ -1,0 +1,106 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# obsidian-fzf - Fuzzy search for Obsidian vaults
+# Usage: obsidian-fzf [PATH_OPCIONAL]
+
+# Determine vault path using precedence:
+# 1. CLI argument
+# 2. Environment variable (OBSIDIAN_VAULT)
+# 3. Config file (~/.config/obsidian-fzf/config)
+# 4. Default (~/Documents/ObsidianVault)
+
+get_vault_path() {
+    local vault_path=""
+    
+    # 1. CLI argument
+    if [[ $# -gt 0 ]]; then
+        vault_path="$1"
+    # 2. Environment variable
+    elif [[ -n "${OBSIDIAN_VAULT:-}" ]]; then
+        vault_path="$OBSIDIAN_VAULT"
+    # 3. Config file
+    elif [[ -f ~/.config/obsidian-fzf/config ]]; then
+        vault_path="$(cat ~/.config/obsidian-fzf/config | head -n 1 | xargs)"
+    # 4. Default
+    else
+        vault_path="$HOME/Documents/ObsidianVault"
+    fi
+    
+    echo "$vault_path"
+}
+
+# Open note in $EDITOR (with vault as working directory)
+open_in_editor() {
+    local file_path="$1"
+    local vault_path="$2"
+    
+    # Get relative path from vault root
+    local relative_path="${file_path#$vault_path/}"
+    
+    # Change to vault directory and open file with relative path
+    (cd "$vault_path" && "${EDITOR:-nvim}" "$relative_path")
+}
+
+# Main function
+main() {
+    # Check dependencies
+    local missing_deps=()
+    for cmd in fzf rg bat; do
+        if ! command -v "$cmd" &> /dev/null; then
+            missing_deps+=("$cmd")
+        fi
+    done
+    
+    if [[ ${#missing_deps[@]} -gt 0 ]]; then
+        echo "Error: Missing dependencies: ${missing_deps[*]}" >&2
+        echo "Please install: fzf, ripgrep (rg), bat" >&2
+        exit 1
+    fi
+    
+    # Get vault path
+    local vault_path
+    vault_path="$(get_vault_path "$@")"
+    
+    # Validate vault path
+    if [[ ! -d "$vault_path" ]]; then
+        echo "Error: Vault path does not exist: $vault_path" >&2
+        echo "" >&2
+        echo "Configure your vault path using one of:" >&2
+        echo "  1. CLI argument: obsidian-fzf /path/to/vault" >&2
+        echo "  2. Environment variable: export OBSIDIAN_VAULT=/path/to/vault" >&2
+        echo "  3. Config file: echo '/path/to/vault' > ~/.config/obsidian-fzf/config" >&2
+        exit 1
+    fi
+    
+    echo "Searching in vault: $vault_path" >&2
+    
+    # Run fzf with ripgrep for fuzzy search
+    local selected_file
+    
+    selected_file=$(
+        cd "$vault_path" && \
+        FZF_DEFAULT_OPTS="" rg --files --type md --follow --hidden --glob '!.git' --glob '!.obsidian' | \
+        fzf --ansi \
+            --prompt "Notes > " \
+            --header "Enter: Open in $EDITOR | Ctrl-↑/↓: Scroll preview | Esc: Exit" \
+            --preview "bat --style=numbers --color=always --line-range :500 {}" \
+            --preview-window "right:60%:wrap" \
+            --bind "ctrl-up:preview-up" \
+            --bind "ctrl-down:preview-down" \
+            --bind "ctrl-u:preview-page-up" \
+            --bind "ctrl-d:preview-page-down" \
+            --height 100% \
+            --layout reverse \
+            --border
+    )
+    
+    # Process selection
+    if [[ -n "$selected_file" ]]; then
+        local full_path="$vault_path/$selected_file"
+        open_in_editor "$full_path" "$vault_path"
+    fi
+}
+
+main "$@"
