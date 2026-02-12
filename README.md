@@ -39,19 +39,38 @@ git clone https://github.com/your-username/obsidian-fzf.git
 cd obsidian-fzf
 ```
 
-2. Copy the script to a directory in your `$PATH`:
+2. Install using Make (recommended):
 
 ```bash
-sudo cp obsidian-fzf /usr/local/bin/
-sudo chmod +x /usr/local/bin/obsidian-fzf
+# System-wide installation (requires sudo)
+sudo make install
+
+# User installation (no sudo needed)
+make install-user
 ```
 
-Or create a symlink:
+Or manually copy the script:
 
 ```bash
+# System-wide
+sudo cp obsidian-fzf /usr/local/bin/
+sudo chmod +x /usr/local/bin/obsidian-fzf
+
+# User installation
 mkdir -p ~/.local/bin
-ln -s "$(pwd)/obsidian-fzf" ~/.local/bin/obsidian-fzf
+cp obsidian-fzf ~/.local/bin/
+chmod +x ~/.local/bin/obsidian-fzf
 # Make sure ~/.local/bin is in your $PATH
+```
+
+### Uninstallation
+
+```bash
+# System-wide
+sudo make uninstall
+
+# User installation
+make uninstall-user
 ```
 
 ## Configuration
