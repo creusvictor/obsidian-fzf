@@ -17,15 +17,34 @@ help:
 
 install:
 	@echo "Installing obsidian-fzf to $(BINDIR)..."
-	install -d $(BINDIR)
-	install -m 755 obsidian-fzf $(BINDIR)/obsidian-fzf
-	@echo "✓ Installation complete!"
-	@echo "Run 'obsidian-fzf' to start"
+	@if [ -w $(BINDIR) ]; then \
+		install -d $(BINDIR); \
+		install -m 755 obsidian-fzf $(BINDIR)/obsidian-fzf; \
+		echo "✓ Installation complete!"; \
+		echo "Run 'obsidian-fzf' to start"; \
+	else \
+		echo ""; \
+		echo "Error: No write permission to $(BINDIR)"; \
+		echo ""; \
+		echo "Try one of these options:"; \
+		echo "  1. Run with sudo: sudo make install"; \
+		echo "  2. Install to user directory: make install-user"; \
+		echo ""; \
+		exit 1; \
+	fi
 
 uninstall:
 	@echo "Removing obsidian-fzf from $(BINDIR)..."
-	rm -f $(BINDIR)/obsidian-fzf
-	@echo "✓ Uninstallation complete!"
+	@if [ -w $(BINDIR) ] || [ -w $(BINDIR)/obsidian-fzf ]; then \
+		rm -f $(BINDIR)/obsidian-fzf; \
+		echo "✓ Uninstallation complete!"; \
+	else \
+		echo ""; \
+		echo "Error: No write permission to $(BINDIR)"; \
+		echo "Run with sudo: sudo make uninstall"; \
+		echo ""; \
+		exit 1; \
+	fi
 
 install-user:
 	@echo "Installing obsidian-fzf to $(USER_BINDIR)..."
