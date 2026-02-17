@@ -2,6 +2,8 @@
 
 Lightning-fast fuzzy search CLI for Obsidian Vaults with note preview and terminal editor integration.
 
+![demo](assets/demo.gif)
+
 ## Features
 
 - Ultra-fast fuzzy search powered by `fzf` and `ripgrep`
@@ -35,7 +37,7 @@ Python 3 is also required (usually pre-installed).
 1. Clone this repository:
 
 ```bash
-git clone https://github.com/your-username/obsidian-fzf.git
+git clone https://github.com/creusvictor/obsidian-fzf.git
 cd obsidian-fzf
 ```
 
