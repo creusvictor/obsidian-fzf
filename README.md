@@ -34,6 +34,22 @@ Python 3 is also required (usually pre-installed).
 
 ## Installation
 
+### One-liner (recommended)
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/creusvictor/obsidian-fzf/main/install.sh | bash
+```
+
+This downloads and installs `obsidian-fzf` to `~/.local/bin` (or `/usr/local/bin` when run as root). The installer will warn you if the install directory is not in your `$PATH` and if any dependencies are missing.
+
+You can also specify a custom install directory:
+
+```bash
+INSTALL_DIR=/usr/local/bin curl -fsSL https://raw.githubusercontent.com/creusvictor/obsidian-fzf/main/install.sh | bash
+```
+
+### From source
+
 1. Clone this repository:
 
 ```bash
@@ -41,7 +57,7 @@ git clone https://github.com/creusvictor/obsidian-fzf.git
 cd obsidian-fzf
 ```
 
-2. Install using Make (recommended):
+2. Install using Make:
 
 ```bash
 # System-wide installation (requires sudo)
