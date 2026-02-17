@@ -19,6 +19,8 @@ Install the following tools before using `obsidian-fzf`:
 ```bash
 # Ubuntu/Debian
 sudo apt install fzf ripgrep bat
+# On some Ubuntu/Debian versions, bat is installed as 'batcat'. Fix with:
+# ln -s /usr/bin/batcat ~/.local/bin/bat  (or: alias bat="batcat")
 
 # Arch Linux
 sudo pacman -S fzf ripgrep bat
